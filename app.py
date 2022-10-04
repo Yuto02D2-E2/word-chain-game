@@ -30,11 +30,33 @@ class Game:
         # 単語の"読み"を返す(全角カタカナ)
         return MeCab.Tagger("-O yomi").parse(word).strip()
 
+    @functools.lru_cache(maxsize=512)
+    def get_prefix(self, word: str) -> str:
+        yomi = self.get_yomi(word)
+        if 2 <= len(yomi) and yomi[1] in {"ッ", "ャ", "ュ", "ョ"}:
+            return yomi[:2]
+        else:
+            return yomi[0]
+
+    @functools.lru_cache(maxsize=512)
+    def get_suffix(self, word: str) -> str:
+        yomi = self.get_yomi(word)
+        if 2 <= len(yomi) and yomi[-1] in {"ッ", "ャ", "ュ", "ョ"}:
+            return yomi[-2:]
+        else:
+            return yomi[-1]
+
     def get_cpu_word(self, user_word: str) -> str:
-        last_char = self.get_yomi(user_word)[-1]
-        if last_char not in self.__dict:
-            return None
-        return random.choice(self.__dict[last_char])
+        user_word_suffix = self.get_suffix(user_word)
+        if user_word_suffix in self.__dict:
+            return random.choice(self.__dict[user_word_suffix])
+        return None
+
+    def check_word_end(self, word: str, player: str) -> bool:
+        if self.get_suffix(word) == "ン":
+            print(f"> 'ん'で終わっています．{player}の負けです．")
+            return False
+        return True
 
     def check_history(self, word: str, player: str) -> bool:
         if self.get_yomi(word) in self.__used_word:
@@ -44,19 +66,18 @@ class Game:
         return True
 
     def check_connect(self, prev_word: str, cur_word: str, cur_player: str) -> bool:
-        if self.get_yomi(prev_word)[-1] != self.get_yomi(cur_word)[0]:
+        if self.get_suffix(prev_word) != self.get_prefix(cur_word):
             print(f"> 前の言葉と繋がっていません．{cur_player}の負けです．")
-            return False
-        return True
-
-    def check_word_end(self, word: str, player: str) -> bool:
-        if self.get_yomi(word)[-1] == "ン":
-            print(f"> 'ん'で終わっています．{player}の負けです．")
             return False
         return True
 
     def main(self) -> None:
         init = True  # 最初の一手は繫がり判定をしないためのフラグ
+        print("")
+        print("しりとりゲーム")
+        print("- 入力は全角ひらがな，全角カタカナ，全角漢字を受け付けます")
+        print("- 先攻はユーザーです")
+        print("")
         while True:
             # User
             user_word = input("user:")
@@ -65,7 +86,7 @@ class Game:
             if not self.check_history(user_word, "user"):
                 return
             if init:
-                cpu_word = self.get_yomi(user_word)[0]
+                cpu_word = self.get_prefix(user_word)
                 init = False
             if not self.check_connect(cpu_word, user_word, "user"):
                 return
