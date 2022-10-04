@@ -18,11 +18,15 @@ with open(os.path.join("data", OUTPUT), "wb") as o:
             for line in lines:
                 word = line[0]
                 yomi = line[-2]
-                if 2 <= len(yomi) and yomi[1] in {"ッ", "ャ", "ュ", "ョ"}:
-                    # 小さいッや伸ばし棒など
-                    prefix = yomi[:2]
+                prefix = yomi[0]
+                # とりあえずprefixで登録
+                if prefix not in __dict:
+                    __dict[prefix] = [word]
                 else:
-                    prefix = yomi[0]
+                    __dict[prefix].append(word)
+                # 促音 拗音の場合は追加で登録
+                if 2 <= len(yomi) and yomi[1] in {"ッ", "ャ", "ュ", "ョ"}:
+                    prefix = yomi[:2]
                 if prefix not in __dict:
                     __dict[prefix] = [word]
                 else:
