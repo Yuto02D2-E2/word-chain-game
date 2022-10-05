@@ -1,0 +1,47 @@
+name: GitHub Actions CI
+
+permissions: write-all
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.10"]
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: install package
+        run: |
+          pip install --upgrade pip
+          pip install pytest
+
+      - name: pytest
+        run: |
+          pytest -v --junitxml=junit/results-${{ matrix.python-version }}.xml
+        continue-on-error: true
+
+      - name: upload pytest result
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: pytest-results-${{ matrix.python-version }}
+          path: junit/results-${{ matrix.python-version }}.xml
+
+      - name: download pytest result
+        uses: actions/download-artifact@v3
+        with:
+          name: pytest-results-${{ matrix.python-version }}
