@@ -3,9 +3,19 @@
 <br>
 
 ## Quick Start
-レポジトリをcloneして，`app.ipynb`ファイルをGoogle Colabで動かすのが一番簡単．
+```bash
+# まずはMeCabをインストール
+# やり方は各自調べる
 
-ローカルで動かすなら，MeCabのインストールをして(結構めんどい)，`app.py`を実行する．
+# 後は簡単
+$ git clone
+$ pip install -U pip
+$ pip install -r requirements.txt
+$ cd src/
+$ python app.py
+```
+
+ローカルにMeCabの環境構築をするのがだるかったら，Google Colabで`app.ipynb`を使えば楽．
 
 ### Screenshot
 ![screenshot](./docs/screenshot.png)
