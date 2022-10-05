@@ -24,14 +24,19 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: install package
+      - name: install mecab packages
+        run: sudo apt install -y mecab libmecab-dev mecab-ipadic mecab-ipadic-utf8
+
+      - name: make symbolic link
+        run: sudo ln -s /etc/mecabrc /usr/local/etc/mecabrc
+
+      - name: install python packages
         run: |
           pip install --upgrade pip
-          pip install pytest
+          pip install -r requirements.txt
 
       - name: pytest
-        run: |
-          pytest -v --junitxml=junit/results-${{ matrix.python-version }}.xml
+        run: pytest -v --junitxml=junit/results-${{ matrix.python-version }}.xml
         continue-on-error: true
 
       - name: upload pytest result
