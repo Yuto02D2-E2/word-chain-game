@@ -27,9 +27,9 @@ with open(os.path.join("data", OUTPUT), "wb") as o:
                 # 促音 拗音の場合は追加で登録
                 if 2 <= len(yomi) and yomi[1] in {"ッ", "ャ", "ュ", "ョ"}:
                     prefix = yomi[:2]
-                if prefix not in __dict:
-                    __dict[prefix] = [word]
-                else:
-                    __dict[prefix].append(word)
+                    if prefix not in __dict:
+                        __dict[prefix] = [word]
+                    else:
+                        __dict[prefix].append(word)
         print("input file:", input_file, "-> end")
     pickle.dump(__dict, o)

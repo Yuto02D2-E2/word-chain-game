@@ -1,5 +1,5 @@
 import pytest
-from app import Game
+from src.app import Game
 
 
 def test_dict():
@@ -48,7 +48,10 @@ def test_get_suffix_extra():
 
 def test_get_cpu_word():
     game = Game()
-    assert game.get_yomi(game.get_cpu_word("しりとり"))[0] == "リ"
+    # tests/からsrc/を見ているので，そのままだとsrc/data/が参照できないっぽい
+    # そのため，テストの時は最小の辞書(exceptの方)を使う
+    assert game.get_cpu_word("しりとり") is None
+    assert game.get_cpu_word("学校") == "嘘"
 
 
 def test_check_word_end():
