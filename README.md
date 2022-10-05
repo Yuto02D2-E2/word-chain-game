@@ -1,3 +1,5 @@
+[![GitHub Actions CI](https://github.com/Yuto02D2-E2/word-chain-game/actions/workflows/ci.yaml/badge.svg)](https://github.com/Yuto02D2-E2/word-chain-game/actions/workflows/ci.yaml)
+
 # しりとり
 
 <br>
